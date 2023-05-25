@@ -5,6 +5,8 @@
   "author": "Virginija Jan <vjanuskaite@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "ag-grid-community": "^29.3.5",
+    "ag-grid-react": "^29.3.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",

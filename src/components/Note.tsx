@@ -2,7 +2,7 @@ import { deleteRequest } from "src/helpers";
 import { TNote, useStore } from "src/store";
 
 const Note = ({ note }: { note: TNote }) => {
-  const categories = useStore((state) => state.categories);
+  const categoriesMap = useStore((state) => state.categoriesMap);
   const removeNote = useStore((state) => state.removeNote);
 
   const handleDelete = async (id: string) => {
@@ -13,9 +13,7 @@ const Note = ({ note }: { note: TNote }) => {
   return (
     <div>
       <h2>{note.name}</h2>
-      <span>
-        {categories?.find((category) => category._id === note.category)?.name}
-      </span>
+      {categoriesMap && <span>{categoriesMap[note.category].name}</span>}
       <button onClick={() => handleDelete(note._id)}>Delete</button>
     </div>
   );

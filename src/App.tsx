@@ -8,11 +8,12 @@ import Layout from "./pages/Layout";
 import ManagePage from "./pages/ManagePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SummaryPage from "./pages/SummaryPage";
-import { useStore } from "./store";
+import { TCategory, useStore } from "./store";
 
 function App() {
   const setNotes = useStore((state) => state.setNotes);
   const setCategories = useStore((state) => state.setCategories);
+  const setCategoriesMap = useStore((state) => state.setCategoriesMap);
 
   useEffect(() => {
     const getData = async () => {
@@ -25,9 +26,14 @@ function App() {
 
       setNotes(notes);
       setCategories(categories);
+      const categoriesMap = {} as Record<string, TCategory>;
+      categories.forEach((category: TCategory) => {
+        categoriesMap[category._id] = category;
+      });
+      setCategoriesMap(categoriesMap);
     };
     getData();
-  }, [setCategories, setNotes]);
+  }, [setCategories, setCategoriesMap, setNotes]);
 
   return (
     <div className="App">

@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import Form from "src/components/Form";
 import Note from "src/components/Note";
+import Table from "src/components/Table";
 import { postRequest } from "src/helpers";
 import { useStore } from "src/store";
 
@@ -10,7 +11,17 @@ const defaultCategories = ["todo", "feature", "bug"];
 const ManagePage = () => {
   const notes = useStore((state) => state.notes);
   const categories = useStore((state) => state.categories);
+  const categoriesMap = useStore((state) => state.categoriesMap);
   const addCategory = useStore((state) => state.addCategory);
+
+  const noteColumnDefs = useMemo(
+    () => [
+      { field: "_id", headerName: "id", checkboxSelection: true },
+      { field: "name" },
+      { field: "category" },
+    ],
+    []
+  );
 
   const generateCategories = useCallback(() => {
     if (categories && !categories.length) {
@@ -43,6 +54,17 @@ const ManagePage = () => {
           <div>Loading...</div>
         )}
       </div>
+      {notes && categoriesMap ? (
+        <Table
+          rowData={notes.map((note) => ({
+            ...note,
+            category: categoriesMap[note.category].name,
+          }))}
+          columnDefs={noteColumnDefs}
+        />
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 };
