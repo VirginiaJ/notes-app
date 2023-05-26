@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import Container from "react-bootstrap/esm/Container";
 import Table from "src/components/Table";
 import { useStore } from "src/store";
 
@@ -24,7 +25,7 @@ const SummaryPage = () => {
   );
 
   return (
-    <div>
+    <Container className="py-3">
       {notes && categories ? (
         <>
           {categories.length ? (
@@ -36,7 +37,7 @@ const SummaryPage = () => {
       ) : (
         <div>Loading...</div>
       )}
-    </div>
+    </Container>
   );
 };
 

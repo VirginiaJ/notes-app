@@ -1,5 +1,7 @@
 import { FormEvent, useState } from "react";
 
+import Button from "react-bootstrap/esm/Button";
+import BootstrapForm from "react-bootstrap/esm/Form";
 import { postRequest } from "src/helpers";
 import { useStore } from "src/store";
 
@@ -28,27 +30,26 @@ const Form = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} id="notesform">
-      <label htmlFor="name">Note name:</label>
-      <input
-        type="text"
-        name="name"
-        id="name"
-        placeholder="name"
-        required
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      ></input>
+    <BootstrapForm onSubmit={handleSubmit} id="notesform">
+      <BootstrapForm.Group className="mb-1" controlId="formNote">
+        <BootstrapForm.Label className="mb-1">Note name:</BootstrapForm.Label>
+        <BootstrapForm.Control
+          type="text"
+          placeholder="Enter note name"
+          required
+          minLength={5}
+          maxLength={50}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </BootstrapForm.Group>
 
-      <label htmlFor="categories">Choose a category:</label>
-      <select
-        name="categories"
-        id="categories"
-        form="notesform"
+      <BootstrapForm.Select
+        className="mb-3"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       >
-        <option value="">--Please choose an option--</option>
+        <option>--Please choose a category--</option>
         {categories &&
           categories.length &&
           categories.map((category) => (
@@ -56,9 +57,12 @@ const Form = () => {
               {category.name}
             </option>
           ))}
-      </select>
-      <button type="submit">Create</button>
-    </form>
+      </BootstrapForm.Select>
+
+      <Button variant="primary" type="submit">
+        Create
+      </Button>
+    </BootstrapForm>
   );
 };
 

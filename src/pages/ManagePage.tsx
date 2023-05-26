@@ -1,7 +1,11 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { AgGridReact } from "ag-grid-react";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/esm/Container";
+import { createPortal } from "react-dom";
 import Form from "src/components/Form";
+import Modal from "src/components/Modal";
 import Table from "src/components/Table";
 import { deleteRequest, postRequest } from "src/helpers";
 import { useStore } from "src/store";
@@ -11,6 +15,7 @@ const defaultCategories = ["todo", "feature", "bug"];
 const ManagePage = () => {
   const tableRef = useRef<AgGridReact>();
   const selectedNotesRef = useRef<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
   const notes = useStore((state) => state.notes);
   const categories = useStore((state) => state.categories);
   const categoriesMap = useStore((state) => state.categoriesMap);
@@ -43,30 +48,44 @@ const ManagePage = () => {
   const onSelectionChanged = useCallback(() => {
     const selectedRows = tableRef.current!.api.getSelectedRows();
     selectedNotesRef.current = selectedRows.map((note) => note._id);
-    (document.querySelector("#delete-button") as HTMLButtonElement).disabled =
-      selectedNotesRef.current.length === 0;
+    selectedNotesRef.current.length === 0
+      ? document.querySelector("#delete-button")?.classList.add("disabled")
+      : document.querySelector("#delete-button")?.classList.remove("disabled");
   }, []);
+
+  const handleModalClose = () => {
+    selectedNotesRef.current = [];
+    document.querySelector("#delete-button")?.classList.add("disabled");
+    setShowModal(false);
+  };
 
   const handleDelete = () => {
     selectedNotesRef.current.forEach(async (id) => {
       await deleteRequest(`${process.env.REACT_APP_API_ENDPOINT}/notes`, id);
       removeNote(id);
+      setShowModal(false);
     });
   };
 
   return (
-    <div>
+    <Container className="py-3">
       {categories && !categories.length && (
-        <button onClick={generateCategories}>
+        <Button className="mb-3" variant="primary" onClick={generateCategories}>
           Generate default categories
-        </button>
+        </Button>
       )}
 
       <Form />
 
-      <button id="delete-button" disabled={true} onClick={handleDelete}>
+      <Button
+        id="delete-button"
+        variant="danger"
+        className="my-3 disabled"
+        onClick={() => setShowModal(true)}
+      >
         Delete selected
-      </button>
+      </Button>
+
       {notes && categoriesMap ? (
         <Table
           ref={tableRef}
@@ -82,7 +101,25 @@ const ManagePage = () => {
       ) : (
         <div>Loading...</div>
       )}
-    </div>
+
+      {createPortal(
+        <Modal show={showModal} handleClose={handleModalClose}>
+          <h3 className="m-3 text-center">
+            Are you sure you want to delete selected notes?
+          </h3>
+
+          <div className="mb-3 mx-3 btn-group">
+            <Button variant="secondary" onClick={handleModalClose}>
+              No
+            </Button>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
+        </Modal>,
+        document.body
+      )}
+    </Container>
   );
 };
 
