@@ -63,6 +63,7 @@ const ManagePage = () => {
     selectedNotesRef.current.forEach(async (id) => {
       await deleteRequest(`${process.env.REACT_APP_API_ENDPOINT}/notes`, id);
       removeNote(id);
+      document.querySelector("#delete-button")?.classList.add("disabled");
       setShowModal(false);
     });
   };
