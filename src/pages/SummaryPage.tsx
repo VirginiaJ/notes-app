@@ -29,7 +29,11 @@ const SummaryPage = () => {
       {notes && categories ? (
         <>
           {categories.length ? (
-            <Table rowData={rowData ?? []} columnDefs={summaryColumnDefs} />
+            <Table
+              rowData={rowData ?? []}
+              columnDefs={summaryColumnDefs}
+              parentStyle={{ height: "90vh", width: "402px" }}
+            />
           ) : (
             <div>No categories created</div>
           )}

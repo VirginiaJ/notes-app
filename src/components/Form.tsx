@@ -10,27 +10,39 @@ const Form = () => {
   const addNote = useStore((state) => state.addNote);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [validated, setValidated] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const res = await postRequest({
-      url: `${process.env.REACT_APP_API_ENDPOINT}/notes`,
-      data: {
-        name,
-        category,
-      },
-    });
+    if ((e.currentTarget as HTMLFormElement).checkValidity() === true) {
+      const res = await postRequest({
+        url: `${process.env.REACT_APP_API_ENDPOINT}/notes`,
+        data: {
+          name,
+          category,
+        },
+      });
 
-    if (res && res._id) {
-      addNote({ name, category, _id: res._id });
+      if (res && res._id) {
+        addNote({ name, category, _id: res._id });
+      }
+      setName("");
+      setCategory("");
+      setValidated(false);
+    } else {
+      e.stopPropagation();
+      setValidated(true);
     }
-    setName("");
-    setCategory("");
   };
 
   return (
-    <BootstrapForm onSubmit={handleSubmit} id="notesform">
+    <BootstrapForm
+      noValidate
+      id="notesform"
+      validated={validated}
+      onSubmit={handleSubmit}
+    >
       <BootstrapForm.Group className="mb-1" controlId="formNote">
         <BootstrapForm.Label className="mb-1">Note name:</BootstrapForm.Label>
         <BootstrapForm.Control
@@ -42,6 +54,9 @@ const Form = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        <BootstrapForm.Control.Feedback type="invalid">
+          Note name must be between 5 and 50 symbols.
+        </BootstrapForm.Control.Feedback>
       </BootstrapForm.Group>
 
       <BootstrapForm.Select

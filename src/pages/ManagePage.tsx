@@ -24,9 +24,9 @@ const ManagePage = () => {
 
   const noteColumnDefs = useMemo(
     () => [
-      { field: "_id", headerName: "id", checkboxSelection: true },
-      { field: "name" },
-      { field: "category" },
+      { field: "_id", headerName: "Id", checkboxSelection: true, width: 300 },
+      { field: "name", width: 600 },
+      { field: "category", width: 400 },
     ],
     []
   );
@@ -91,12 +91,13 @@ const ManagePage = () => {
           ref={tableRef}
           rowData={notes.map((note) => ({
             ...note,
-            category: categoriesMap[note.category].name,
+            category: categoriesMap[note.category]?.name,
           }))}
           columnDefs={noteColumnDefs}
           rowSelection={"multiple"}
           defaultColDef={{ resizable: true }}
           onSelectionChanged={onSelectionChanged}
+          parentStyle={{ height: "60vh", width: "100%" }}
         />
       ) : (
         <div>Loading...</div>
