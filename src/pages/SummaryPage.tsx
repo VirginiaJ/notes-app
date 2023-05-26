@@ -7,24 +7,20 @@ const SummaryPage = () => {
   const notes = useStore((state) => state.notes);
   const categories = useStore((state) => state.categories);
 
-  const rowData = useMemo(() => {
-    const data = {} as Record<string, number>;
-    if (!categories || !notes) return data;
-    categories.forEach((category) => {
-      const notesInCategory = notes?.filter(
-        (note) => note.category === category._id
-      );
-      data[category.name] = notesInCategory.length;
-    });
-    return data;
-  }, [categories, notes]);
-
-  const categoriesColumnDefs = useMemo(
+  const rowData = useMemo(
     () =>
-      categories
-        ? categories.map((category) => ({ field: category.name }))
-        : [],
-    [categories]
+      categories?.map((category) => {
+        const notesInCategory = notes?.filter(
+          (note) => note.category === category._id
+        );
+        return { category: category.name, count: notesInCategory?.length };
+      }),
+    [categories, notes]
+  );
+
+  const summaryColumnDefs = useMemo(
+    () => [{ field: "category" }, { field: "count" }],
+    []
   );
 
   return (
@@ -32,7 +28,7 @@ const SummaryPage = () => {
       {notes && categories ? (
         <>
           {categories.length ? (
-            <Table rowData={[rowData]} columnDefs={categoriesColumnDefs} />
+            <Table rowData={rowData ?? []} columnDefs={summaryColumnDefs} />
           ) : (
             <div>No categories created</div>
           )}
